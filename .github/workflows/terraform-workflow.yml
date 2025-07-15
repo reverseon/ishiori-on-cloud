@@ -1,0 +1,53 @@
+name: Run Terraform Workflow of specific folder
+
+on:
+  workflow_call:
+    inputs:
+      check_mode:
+        description: 'Run the terraform in check (plan) mode'
+        required: true
+        type: boolean
+        default: false
+      folder:
+        description: 'The folder to run the terraform in'
+        required: true
+        type: string
+        default: ""
+    secrets:
+      GPG_PASSPHRASE:
+        required: true
+  workflow_dispatch:
+    inputs:
+      check_mode:
+        description: 'Run the terraform in check (plan) mode'
+        required: true
+        type: boolean
+        default: false
+      folder:
+        description: 'The folder to run the terraform in'
+        required: true
+        type: string
+        default: ""
+
+jobs:
+  terraform-workflow:
+    runs-on: ubuntu-24.04
+    # Add permissions for PR comments
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Check arguments
+        run: |
+          if [ -z "${{ inputs.folder }}" ]; then
+            echo "folder is required. please provide a folder name."
+            exit 1
+          fi
+
+      - name: Hello World
+        run: | 
+          echo "Hello, World! Running Terraform in folder: ${{ inputs.folder }}"
