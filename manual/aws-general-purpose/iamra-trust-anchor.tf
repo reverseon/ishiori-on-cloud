@@ -1,7 +1,3 @@
-import {
-  to = aws_rolesanywhere_trust_anchor.ishiori_ca_trust_anchor
-  id = "7e521ecb-2e18-45aa-95be-00dacc37c7fb"
-}
 resource "aws_rolesanywhere_trust_anchor" "ishiori_ca_trust_anchor" {
   provider = aws
   name     = "ishiori-ca-trust-anchor"
@@ -59,11 +55,6 @@ locals {
 
 # 2. Terraform CI S3 Backend Role
 
-import {
-  to = aws_iam_role.terraform_ci_s3_backend_role
-  id = "TerraformCIS3Backend"
-}
-
 resource "aws_iam_role" "terraform_ci_s3_backend_role" {
   provider = aws
   name     = "TerraformCIS3Backend"
@@ -90,11 +81,6 @@ resource "aws_iam_role" "terraform_ci_s3_backend_role" {
 #     }
 #   ]
 # }
-
-import {
-  to = aws_iam_role_policy.terraform_ci_s3_backend_policy
-  id = "TerraformCIS3Backend:TerraformCIS3BackendPolicy"
-}
 
 resource "aws_iam_role_policy" "terraform_ci_s3_backend_policy" {
   provider = aws
@@ -123,11 +109,6 @@ resource "aws_iam_role_policy" "terraform_ci_s3_backend_policy" {
 }
 
 # Profile for Allowing to assume the role
-
-import {
-  to = aws_rolesanywhere_profile.onpremise_rolesanywhere_profile
-  id = "184e4286-bd01-4e54-abd7-f737c3edf350"
-}
 
 resource "aws_rolesanywhere_profile" "onpremise_rolesanywhere_profile" {
   provider = aws

@@ -1,16 +1,6 @@
-import {
-  to = aws_s3_bucket.terraform_state
-  id = "ishiori-ci-terraform-state"
-}
-
 resource "aws_s3_bucket" "terraform_state" {
   bucket              = "ishiori-ci-terraform-state"
   object_lock_enabled = true
-}
-
-import {
-  to = aws_s3_bucket_versioning.terraform_state
-  id = "ishiori-ci-terraform-state"
 }
 
 resource "aws_s3_bucket_versioning" "terraform_state" {
@@ -18,11 +8,6 @@ resource "aws_s3_bucket_versioning" "terraform_state" {
   versioning_configuration {
     status = "Enabled"
   }
-}
-
-import {
-  to = aws_s3_bucket_server_side_encryption_configuration.terraform_state
-  id = "ishiori-ci-terraform-state"
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_state" {
@@ -33,11 +18,6 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_state" 
       sse_algorithm = "AES256"
     }
   }
-}
-
-import {
-  to = aws_s3_bucket_public_access_block.terraform_state
-  id = "ishiori-ci-terraform-state"
 }
 
 resource "aws_s3_bucket_public_access_block" "terraform_state" {
