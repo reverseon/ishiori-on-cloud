@@ -29,6 +29,7 @@ on:
         type: string
         default: ""
 
+
 jobs:
   terraform-workflow:
     runs-on: ubuntu-24.04
@@ -56,7 +57,18 @@ jobs:
             exit 1
           fi
 
-      - name: Verify AWS credentials
-        run: | 
-          echo "Running Terraform in folder: ${{ inputs.folder }}"
-          aws sts get-caller-identity
+      - name: Get Terraform Version
+        id: get_terraform_version
+        run: |
+          cd "${{ inputs.folder }}"
+          echo "terraform_version=$(cat .terraform-version)" >> $GITHUB_ENV
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.terraform_version }}
+      
+      - name: Verify Terraform Version
+        run: |
+          terraform version
+          echo "Terraform version: ${{ env.terraform_version }}"
