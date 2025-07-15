@@ -1,9 +1,9 @@
 terraform {
   backend "s3" {
-    bucket              = "ishiori-ci-terraform-state"
-    key                 = "cistate/aws"
-    region              = "ap-northeast-1"
-    encrypt             = true
+    bucket  = "ishiori-ci-terraform-state"
+    key     = "cistate/aws"
+    region  = "ap-northeast-1"
+    encrypt = true
   }
   required_providers {
     aws = {
