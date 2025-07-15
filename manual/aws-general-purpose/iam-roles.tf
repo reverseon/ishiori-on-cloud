@@ -24,6 +24,27 @@ locals {
       }
     ]
   })
+
+  github_oidc_assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRoleWithWebIdentity"
+        Effect = "Allow"
+        Principal = {
+          Federated = aws_iam_openid_connect_provider.github.arn
+        }
+        Condition = {
+          StringEquals = {
+            "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
+          }
+          StringLike = {
+            "token.actions.githubusercontent.com:sub" = "repo:reverseon/ishiori-on-cloud:*"
+          }
+        }
+      }
+    ]
+  })
 }
 
 # 1. AdministratorAccess Role
@@ -39,6 +60,19 @@ locals {
 #   role       = aws_iam_role.administrator_access_role.name
 #   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 # }
+
+# CI Administrator Access Role for GitHub Actions
+resource "aws_iam_role" "ci_administrator_access_role" {
+  provider = aws
+  name     = "CIAdministratorAccessRole"
+  assume_role_policy = local.github_oidc_assume_role_policy
+}
+
+resource "aws_iam_role_policy_attachment" "ci_administrator_access_policy_attachment" {
+  provider   = aws
+  role       = aws_iam_role.ci_administrator_access_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+}
 
 
 # 2. Terraform CI S3 Backend Role

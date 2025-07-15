@@ -32,14 +32,22 @@ on:
 jobs:
   terraform-workflow:
     runs-on: ubuntu-24.04
-    # Add permissions for PR comments
+    # Add permissions for PR comments and OIDC token
     permissions:
       contents: read
       pull-requests: write
+      id-token: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/CIAdministratorAccessRole
+          role-session-name: GitHubActions-${{ github.run_id }}
+          aws-region: 'ap-northeast-1' 
 
       - name: Check arguments
         run: |
@@ -48,6 +56,7 @@ jobs:
             exit 1
           fi
 
-      - name: Hello World
+      - name: Verify AWS credentials
         run: | 
-          echo "Hello, World! Running Terraform in folder: ${{ inputs.folder }}"
+          echo "Running Terraform in folder: ${{ inputs.folder }}"
+          aws sts get-caller-identity
