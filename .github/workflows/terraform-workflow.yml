@@ -91,7 +91,7 @@ jobs:
           fi
 
           echo "Running terraform format..."
-          terraform fmt -check -diff -recursive
+          terraform fmt -check -recursive
 
           if [ $? -ne 0 ]; then
             echo "Terraform format check failed"
