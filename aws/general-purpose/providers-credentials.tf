@@ -15,7 +15,7 @@ terraform {
 
 data "aws_caller_identity" "current" {}
 
-output "current_aws_caller_identity" {
+output "current_aws_caller_identity_details" {
   value = {
     account_id          = data.aws_caller_identity.current.id
     arn_without_session = replace(data.aws_caller_identity.current.arn, "/\\/[a-f0-9]{40}$/", "")
