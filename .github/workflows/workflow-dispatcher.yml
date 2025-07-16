@@ -1,0 +1,54 @@
+name: Workflow Dispatcher
+
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+    branches:
+      - '*'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  check-changes:
+    runs-on: ubuntu-24.04
+    outputs:
+      tf_cloudflare_changed: ${{ steps.filter.outputs.tf_cloudflare }}
+      tf_aws_general_purpose_changed: ${{ steps.filter.outputs.tf_aws_general_purpose }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Check for file changes
+        uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            tf_cloudflare:
+              - 'cloudflare/*'
+              - '.github/workflows/terraform-workflow.yml'
+            tf_aws_general_purpose:
+              - 'aws/general-purpose/*'
+              - '.github/workflows/terraform-workflow.yml'
+
+  trigger-tf-cloudflare:
+    needs: check-changes
+    if: ${{ needs.check-changes.outputs.tf_cloudflare_changed == 'true' }}
+    uses: ./.github/workflows/terraform-workflow.yml
+    with:
+      check_mode: ${{ github.ref != 'refs/heads/main' }}
+      folder: cloudflare
+  
+  trigger-terraform-aws-general-purpose:
+    needs: check-changes
+    if: ${{ needs.check-changes.outputs.tf_aws_general_purpose_changed == 'true' }}
+    uses: ./.github/workflows/terraform-workflow.yml
+    with:
+      check_mode: ${{ github.ref != 'refs/heads/main' }}
+      folder: aws
