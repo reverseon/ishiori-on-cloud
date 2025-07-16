@@ -93,3 +93,8 @@ jobs:
 
           echo "Terraform init, format, and validate completed successfully."
 
+      - name: Planning Terraform
+        run: |
+          cd "${{ inputs.folder }}"
+          terraform plan -out=/tmp/${{ inputs.folder }}-${{ github.run_id }}.tfplan
+          echo "Terraform plan completed successfully. Plan is saved to /tmp/${{ inputs.folder }}-${{ github.run_id }}.tfplan"
