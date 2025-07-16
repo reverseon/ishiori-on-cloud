@@ -11,6 +11,7 @@ on:
 permissions:
   contents: read
   pull-requests: write
+  id-token: write
 
 jobs:
   check-changes:
@@ -44,6 +45,8 @@ jobs:
     with:
       check_mode: ${{ github.ref != 'refs/heads/main' }}
       folder: cloudflare
+    secrets:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
   
   trigger-terraform-aws-general-purpose:
     needs: check-changes
@@ -51,4 +54,4 @@ jobs:
     uses: ./.github/workflows/terraform-workflow.yml
     with:
       check_mode: ${{ github.ref != 'refs/heads/main' }}
-      folder: aws
+      folder: aws/general-purpose
