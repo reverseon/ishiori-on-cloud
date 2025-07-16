@@ -160,3 +160,12 @@ jobs:
               "${{ github.api_url }}/repos/${{ github.repository }}/issues/${PR_NUMBER}/comments" \
               -d "{\"body\":$(echo "$COMMENT_BODY" | jq -R -s .)}"
           fi
+      - name: Apply Terraform
+        run: |
+          cd "${{ inputs.folder }}"
+          if [ "${{ inputs.check_mode }}" = "false" ] && [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            echo "Running in apply mode"
+            terraform apply -auto-approve -input=false ${{ env.TMP_PLAN_LOCATION }}
+          else
+            echo "Running in check mode. skipping terraform apply."
+          fi
