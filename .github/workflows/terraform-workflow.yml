@@ -96,5 +96,7 @@ jobs:
       - name: Planning Terraform
         run: |
           cd "${{ inputs.folder }}"
-          terraform plan -out=/tmp/${{ inputs.folder }}-${{ github.run_id }}.tfplan
+          FOLDER_WITHOUT_SLASH=$(echo "${{ inputs.folder }}" | sed 's:/*$::')
+          echo "TMP_PLAN_LOCATION=/tmp/$FOLDER_WITHOUT_SLASH-${{ github.run_id }}.tfplan" >> $GITHUB_ENV
+          terraform plan -out=${{ env.TMP_PLAN_LOCATION }}
           echo "Terraform plan completed successfully. Plan is saved to /tmp/${{ inputs.folder }}-${{ github.run_id }}.tfplan"
