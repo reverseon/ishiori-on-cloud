@@ -99,4 +99,4 @@ jobs:
         run: |
           cd "${{ inputs.folder }}"
           terraform plan -out=${{ env.TMP_PLAN_LOCATION }}
-          echo "Terraform plan completed successfully. Plan is saved to /tmp/${{ inputs.folder }}-${{ github.run_id }}.tfplan"
+          echo "Terraform plan completed successfully. Plan is saved to ${{ env.TMP_PLAN_LOCATION }}"
