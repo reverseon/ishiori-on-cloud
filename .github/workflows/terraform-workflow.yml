@@ -112,7 +112,7 @@ jobs:
         run: |
           cd "${{ inputs.folder }}"
           
-          PLAN_OUTPUT=$(terraform show -no-color ${{ env.TMP_PLAN_LOCATION }})
+          PLAN_OUTPUT=$(terraform show -no-color ${{ env.TMP_PLAN_LOCATION }} 2>/dev/null)
           
           PR_NUMBER=${{ steps.pr.outputs.number || github.event.number }}
           
