@@ -115,7 +115,7 @@ jobs:
         run: |
           cd "${{ inputs.folder }}"
           
-          PLAN_OUTPUT=$(terraform show -no-color ${{ env.TMP_PLAN_LOCATION }} 2>/dev/null)
+          PLAN_OUTPUT=$(terraform show -no-color ${{ env.TMP_PLAN_LOCATION }} 2>/dev/null | grep -v "::debug::" | grep -v "^\[command\]")
           
           PR_NUMBER=${{ steps.pr.outputs.number || github.event.number }}
           
