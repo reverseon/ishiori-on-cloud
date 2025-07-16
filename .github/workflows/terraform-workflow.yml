@@ -13,6 +13,10 @@ on:
         required: true
         type: string
         default: ""
+    secrets:
+      CLOUDFLARE_API_TOKEN:
+        description: 'Cloudflare API token'
+        required: false
   workflow_dispatch:
     inputs:
       check_mode:
