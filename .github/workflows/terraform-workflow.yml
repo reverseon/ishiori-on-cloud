@@ -75,6 +75,8 @@ jobs:
       
       - name: Set job-wide environment variables
         run: |
+          FOLDER_FILENAME_FRIENDLY=$(echo "${{ inputs.folder }}" | sed 's/[^a-zA-Z0-9._-]/_/g')
+          echo "TMP_PLAN_LOCATION=/tmp/$FOLDER_FILENAME_FRIENDLY-${{ github.run_id }}.tfplan" >> $GITHUB_ENV
           if [ "${{ inputs.folder }}" == "cloudflare" ]; then
             echo "TF_VAR_cloudflare_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}" >> $GITHUB_ENV
           fi
@@ -96,7 +98,5 @@ jobs:
       - name: Planning Terraform
         run: |
           cd "${{ inputs.folder }}"
-          FOLDER_WITHOUT_SLASH=$(echo "${{ inputs.folder }}" | sed 's:/*$::')
-          echo "TMP_PLAN_LOCATION=/tmp/$FOLDER_WITHOUT_SLASH-${{ github.run_id }}.tfplan" >> $GITHUB_ENV
           terraform plan -out=${{ env.TMP_PLAN_LOCATION }}
           echo "Terraform plan completed successfully. Plan is saved to /tmp/${{ inputs.folder }}-${{ github.run_id }}.tfplan"
