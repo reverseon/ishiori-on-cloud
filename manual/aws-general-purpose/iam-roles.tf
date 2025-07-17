@@ -45,6 +45,28 @@ locals {
       }
     ]
   })
+
+}
+
+# S3 Backend Policy Document
+data "aws_iam_policy_document" "terraform_s3_backend" {
+  statement {
+    effect = "Allow"
+    actions = ["s3:ListBucket"]
+    resources = ["arn:aws:s3:::${aws_s3_bucket.terraform_state.id}"]
+  }
+  
+  statement {
+    effect = "Allow"
+    actions = ["s3:GetObject", "s3:PutObject"]
+    resources = ["arn:aws:s3:::${aws_s3_bucket.terraform_state.id}/*"]
+  }
+  
+  statement {
+    effect = "Allow"
+    actions = ["s3:DeleteObject"]
+    resources = ["arn:aws:s3:::${aws_s3_bucket.terraform_state.id}/*.tflock"]
+  }
 }
 
 # 1. AdministratorAccess Role
@@ -61,17 +83,28 @@ locals {
 #   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 # }
 
-# CI Administrator Access Role for GitHub Actions
-resource "aws_iam_role" "ci_administrator_access_role" {
+# CI Terraform Role for GitHub Actions
+resource "aws_iam_role" "ci_terraform_provisions_role" {
   provider = aws
-  name     = "CIAdministratorAccessRole"
+  name     = "CITerraformProvisionsRole"
   assume_role_policy = local.github_oidc_assume_role_policy
 }
 
-resource "aws_iam_role_policy_attachment" "ci_administrator_access_policy_attachment" {
-  provider   = aws
-  role       = aws_iam_role.ci_administrator_access_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+data "aws_iam_policy_document" "ci_terraform_provisions" {
+  statement {
+    effect = "Allow"
+    actions = ["sts:GetCallerIdentity"]
+    resources = ["*"]
+  }
+  
+  source_policy_documents = [data.aws_iam_policy_document.terraform_s3_backend.json]
+}
+
+resource "aws_iam_role_policy" "ci_terraform_provisions_policy" {
+  provider = aws
+  name     = "CITerraformProvisionsPolicy"
+  role     = aws_iam_role.ci_terraform_provisions_role.name
+  policy   = data.aws_iam_policy_document.ci_terraform_provisions.json
 }
 
 
@@ -87,24 +120,5 @@ resource "aws_iam_role_policy" "terraform_ci_s3_backend_policy" {
   provider = aws
   name     = "TerraformCIS3BackendPolicy"
   role     = aws_iam_role.terraform_ci_s3_backend_role.name
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = "s3:ListBucket"
-        Resource = "arn:aws:s3:::${aws_s3_bucket.terraform_state.id}"
-      },
-      {
-        Effect = "Allow"
-        Action = ["s3:GetObject", "s3:PutObject"]
-        Resource = "arn:aws:s3:::${aws_s3_bucket.terraform_state.id}/*"
-      },
-      {
-        Effect = "Allow"
-        Action = "s3:DeleteObject"
-        Resource = "arn:aws:s3:::${aws_s3_bucket.terraform_state.id}/*.tflock"
-      }
-    ]
-  })
+  policy   = data.aws_iam_policy_document.terraform_s3_backend.json
 }
