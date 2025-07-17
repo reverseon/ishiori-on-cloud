@@ -61,17 +61,27 @@ locals {
 #   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 # }
 
-# CI Administrator Access Role for GitHub Actions
-resource "aws_iam_role" "ci_administrator_access_role" {
+# CI Terraform Role for GitHub Actions
+resource "aws_iam_role" "ci_terraform_provisions_role" {
   provider = aws
-  name     = "CIAdministratorAccessRole"
+  name     = "CITerraformProvisionsRole"
   assume_role_policy = local.github_oidc_assume_role_policy
 }
 
-resource "aws_iam_role_policy_attachment" "ci_administrator_access_policy_attachment" {
-  provider   = aws
-  role       = aws_iam_role.ci_administrator_access_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+resource "aws_iam_role_policy" "ci_terraform_provisions_policy" {
+  provider = aws
+  name     = "CITerraformProvisionsPolicy"
+  role     = aws_iam_role.ci_terraform_provisions_role.name
+  policy   = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = "sts:GetCallerIdentity"
+        Resource = "*"
+      }
+    ]
+  })
 }
 
 
