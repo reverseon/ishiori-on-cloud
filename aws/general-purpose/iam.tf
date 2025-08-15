@@ -19,12 +19,6 @@ resource "aws_iam_role" "ecr_full_access_role" {
     ]
   })
 
-  tags = {
-    Name        = "ECRFullAccessRole"
-    Environment = "production"
-    Project     = "ishiori"
-    Purpose     = "ECR full access"
-  }
 }
 
 # IAM Policy for full ECR access
@@ -57,12 +51,6 @@ resource "aws_iam_policy" "ecr_full_access_policy" {
       }
     ]
   })
-
-  tags = {
-    Name        = "ECRFullAccessPolicy"
-    Environment = "production"
-    Project     = "ishiori"
-  }
 }
 
 # Attach the policy to the role
@@ -75,10 +63,4 @@ resource "aws_iam_role_policy_attachment" "ecr_full_access_attachment" {
 resource "aws_iam_instance_profile" "ecr_instance_profile" {
   name = "ECRInstanceProfile"
   role = aws_iam_role.ecr_full_access_role.name
-
-  tags = {
-    Name        = "ECRInstanceProfile"
-    Environment = "production"
-    Project     = "ishiori"
-  }
 }
