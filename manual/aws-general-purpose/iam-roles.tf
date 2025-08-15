@@ -97,6 +97,59 @@ data "aws_iam_policy_document" "ci_terraform_provisions" {
     resources = ["*"]
   }
   
+  # ECR permissions for creating and managing ECR repositories
+  statement {
+    effect = "Allow"
+    actions = [
+      "ecr:CreateRepository",
+      "ecr:DeleteRepository",
+      "ecr:DescribeRepositories",
+      "ecr:GetRepositoryPolicy",
+      "ecr:SetRepositoryPolicy",
+      "ecr:DeleteRepositoryPolicy",
+      "ecr:PutImageScanningConfiguration",
+      "ecr:PutImageTagMutability",
+      "ecr:ListTagsForResource",
+      "ecr:TagResource",
+      "ecr:UntagResource"
+    ]
+    resources = ["*"]
+  }
+  
+  # IAM permissions for creating and managing IAM roles, policies, and attachments
+  statement {
+    effect = "Allow"
+    actions = [
+      "iam:CreateRole",
+      "iam:DeleteRole",
+      "iam:GetRole",
+      "iam:ListRoles",
+      "iam:UpdateRole",
+      "iam:TagRole",
+      "iam:UntagRole",
+      "iam:CreatePolicy",
+      "iam:DeletePolicy",
+      "iam:GetPolicy",
+      "iam:GetPolicyVersion",
+      "iam:ListPolicies",
+      "iam:ListPolicyVersions",
+      "iam:TagPolicy",
+      "iam:UntagPolicy",
+      "iam:AttachRolePolicy",
+      "iam:DetachRolePolicy",
+      "iam:ListAttachedRolePolicies",
+      "iam:CreateInstanceProfile",
+      "iam:DeleteInstanceProfile",
+      "iam:GetInstanceProfile",
+      "iam:ListInstanceProfiles",
+      "iam:AddRoleToInstanceProfile",
+      "iam:RemoveRoleFromInstanceProfile",
+      "iam:TagInstanceProfile",
+      "iam:UntagInstanceProfile"
+    ]
+    resources = ["*"]
+  }
+  
   source_policy_documents = [data.aws_iam_policy_document.terraform_s3_backend.json]
 }
 
