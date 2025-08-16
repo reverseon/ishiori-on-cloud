@@ -8,7 +8,7 @@ resource "aws_iam_role" "ecr_pull_role" {
       {
         Effect = "Allow"
         Principal = {
-          AWS = "arn:aws:iam::319844025384:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_AdministratorAccess_9ac8c34c1d1b91bb"
+          AWS = "arn:aws:iam::319844025384:role/aws-reserved/sso.amazonaws.com/ap-northeast-1/AWSReservedSSO_AdministratorAccess_9ac8c34c1d1b91bb"
         }
         Action = "sts:AssumeRole"
       }
