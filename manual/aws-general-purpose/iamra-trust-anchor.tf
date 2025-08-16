@@ -17,7 +17,8 @@ resource "aws_rolesanywhere_profile" "onpremise_rolesanywhere_profile" {
   name     = "OnpremiseAllowedRoles"
   role_arns = [
     # aws_iam_role.onpremise_admin_role.arn 
-    aws_iam_role.terraform_ci_s3_backend_role.arn
+    aws_iam_role.terraform_ci_s3_backend_role.arn,
+    "arn:aws:iam::319844025384:role/ECRPullRole"
   ]
   enabled = true
 }
