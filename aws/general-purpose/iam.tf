@@ -1,6 +1,6 @@
 # IAM Role for ECR Access
-resource "aws_iam_role" "ecr_full_access_role" {
-  name = "ECRFullAccessRole"
+resource "aws_iam_role" "ecr_pull_role" {
+  name = "ECRPullRole"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -9,11 +9,7 @@ resource "aws_iam_role" "ecr_full_access_role" {
         Action = "sts:AssumeRole"
         Effect = "Allow"
         Principal = {
-          Service = [
-            "ec2.amazonaws.com",
-            "ecs-tasks.amazonaws.com",
-            "codebuild.amazonaws.com"
-          ]
+          AWS = "arn:aws:iam::319844025384:role/AWSReservedSSO_AdministratorAccess_*"
         }
       }
     ]
@@ -21,10 +17,10 @@ resource "aws_iam_role" "ecr_full_access_role" {
 
 }
 
-# IAM Policy for full ECR access
-resource "aws_iam_policy" "ecr_full_access_policy" {
-  name        = "ECRFullAccessPolicy"
-  description = "Policy that provides full access to ECR repositories"
+# IAM Policy for ECR pull access
+resource "aws_iam_policy" "ecr_pull_access_policy" {
+  name        = "ECRPullAccessPolicy"
+  description = "Policy that provides pull access to private ECR repositories"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -32,35 +28,25 @@ resource "aws_iam_policy" "ecr_full_access_policy" {
       {
         Effect = "Allow"
         Action = [
-          "ecr:*",
-          "ecr-public:*"
+          "ecr:GetAuthorizationToken"
         ]
         Resource = "*"
       },
       {
         Effect = "Allow"
         Action = [
-          "sts:GetServiceBearerToken"
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:BatchGetImage"
         ]
-        Resource = "*"
-        Condition = {
-          StringEquals = {
-            "sts:AWSServiceName" = "codeartifact.amazonaws.com"
-          }
-        }
+        Resource = "arn:aws:ecr:*:319844025384:repository/*"
       }
     ]
   })
 }
 
 # Attach the policy to the role
-resource "aws_iam_role_policy_attachment" "ecr_full_access_attachment" {
-  role       = aws_iam_role.ecr_full_access_role.name
-  policy_arn = aws_iam_policy.ecr_full_access_policy.arn
-}
-
-# Instance profile for EC2 instances to assume the role
-resource "aws_iam_instance_profile" "ecr_instance_profile" {
-  name = "ECRInstanceProfile"
-  role = aws_iam_role.ecr_full_access_role.name
+resource "aws_iam_role_policy_attachment" "ecr_pull_access_attachment" {
+  role       = aws_iam_role.ecr_pull_role.name
+  policy_arn = aws_iam_policy.ecr_pull_access_policy.arn
 }
