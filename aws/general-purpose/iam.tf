@@ -25,7 +25,7 @@ resource "aws_iam_role" "ecr_pull_role" {
         Condition = {
           ArnEquals = {
             "aws:SourceArn" = [
-                "arn:aws:rolesanywhere:ap-northeast-1:319844025384:trust-anchor/7e521ecb-2e18-45aa-95be-00dacc37c7fb"
+              "arn:aws:rolesanywhere:ap-northeast-1:319844025384:trust-anchor/7e521ecb-2e18-45aa-95be-00dacc37c7fb"
             ]
           }
         }
