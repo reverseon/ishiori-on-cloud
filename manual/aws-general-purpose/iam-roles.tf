@@ -109,6 +109,9 @@ data "aws_iam_policy_document" "ci_terraform_provisions" {
       "ecr:DeleteRepositoryPolicy",
       "ecr:PutImageScanningConfiguration",
       "ecr:PutImageTagMutability",
+      "ecr:PutLifecyclePolicy",
+      "ecr:GetLifecyclePolicy",
+      "ecr:DeleteLifecyclePolicy",
       "ecr:ListTagsForResource",
       "ecr:TagResource",
       "ecr:UntagResource"
