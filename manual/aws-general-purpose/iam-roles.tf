@@ -119,6 +119,25 @@ data "aws_iam_policy_document" "ci_terraform_provisions" {
     resources = ["*"]
   }
   
+  # ECR Public permissions for creating and managing ECR Public repositories
+  statement {
+    effect = "Allow"
+    actions = [
+      "ecr-public:CreateRepository",
+      "ecr-public:DeleteRepository",
+      "ecr-public:DescribeRepositories",
+      "ecr-public:GetRepositoryPolicy",
+      "ecr-public:SetRepositoryPolicy",
+      "ecr-public:DeleteRepositoryPolicy",
+      "ecr-public:PutRepositoryCatalogData",
+      "ecr-public:GetRepositoryCatalogData",
+      "ecr-public:ListTagsForResource",
+      "ecr-public:TagResource",
+      "ecr-public:UntagResource"
+    ]
+    resources = ["*"]
+  }
+  
   # IAM permissions for creating and managing IAM roles, policies, and attachments
   statement {
     effect = "Allow"
