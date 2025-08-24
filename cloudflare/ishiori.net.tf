@@ -35,11 +35,11 @@ resource "cloudflare_dns_record" "wild_mizuki_otaprv_ishiori_net_A" {
   proxied = false
 }
 
-resource "cloudflare_dns_record" "root_ishiori_net_CNAME" {
+resource "cloudflare_dns_record" "root_ishiori_net_A" {
   zone_id = cloudflare_zone.ishiori_net.id
   name    = "ishiori.net"
-  type    = "CNAME"
-  content = "hello.ishiori.net"
+  type    = "A"
+  content = "192.0.2.1"
   ttl     = 1
   proxied = true
 }
