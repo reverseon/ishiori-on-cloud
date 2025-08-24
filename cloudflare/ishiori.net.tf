@@ -1,10 +1,3 @@
-resource "cloudflare_record" "ishiori_net_cname" {
-  zone_id = var.cloudflare_zone_id
-  name    = "@"
-  type    = "CNAME"
-  value   = "hello.ishiori.net"
-  proxied = true
-}
 resource "cloudflare_zone" "ishiori_net" {
   account = {
     id = "57cf579ea376c163634edd1e40c36116"
@@ -40,4 +33,13 @@ resource "cloudflare_dns_record" "wild_mizuki_otaprv_ishiori_net_A" {
   content = "192.168.1.249"
   ttl     = 1
   proxied = false
+}
+
+resource "cloudflare_dns_record" "root_ishiori_net_CNAME" {
+  zone_id = cloudflare_zone.ishiori_net.id
+  name    = "ishiori.net"
+  type    = "CNAME"
+  content = "hello.ishiori.net"
+  ttl     = 1
+  proxied = true
 }
