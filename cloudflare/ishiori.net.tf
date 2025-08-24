@@ -1,3 +1,10 @@
+resource "cloudflare_record" "ishiori_net_cname" {
+  zone_id = var.cloudflare_zone_id
+  name    = "@"
+  type    = "CNAME"
+  value   = "hello.ishiori.net"
+  proxied = true
+}
 resource "cloudflare_zone" "ishiori_net" {
   account = {
     id = "57cf579ea376c163634edd1e40c36116"
