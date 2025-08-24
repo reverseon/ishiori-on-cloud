@@ -29,5 +29,6 @@ resource "aws_ecr_lifecycle_policy" "main" {
 
 # Public ECR Repository
 resource "aws_ecrpublic_repository" "public" {
+  provider        = aws.us_east_1
   repository_name = "ishiori-k8s-public-ecr"
 }
