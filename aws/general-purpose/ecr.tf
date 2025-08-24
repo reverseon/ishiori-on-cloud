@@ -31,26 +31,3 @@ resource "aws_ecr_lifecycle_policy" "main" {
 resource "aws_ecrpublic_repository" "public" {
   repository_name = "ishiori-k8s-public-ecr"
 }
-
-# Public ECR Lifecycle Policy
-resource "aws_ecrpublic_repository_lifecycle_policy" "public" {
-  repository_name = aws_ecrpublic_repository.public.repository_name
-
-  policy = jsonencode({
-    rules = [
-      {
-        rulePriority = 1
-        description  = "Keep only 2 latest images for k8s-landing-page_* tags"
-        selection = {
-          tagStatus     = "tagged"
-          tagPrefixList = ["k8s-landing-page_"]
-          countType     = "imageCountMoreThan"
-          countNumber   = 2
-        }
-        action = {
-          type = "expire"
-        }
-      }
-    ]
-  })
-}
