@@ -30,7 +30,7 @@ resource "cloudflare_dns_record" "wild_mizuki_otaprv_ishiori_net_A" {
   zone_id = cloudflare_zone.ishiori_net.id
   name    = "*.mizuki.otaprv.ishiori.net"
   type    = "A"
-  content = "192.168.1.250"
+  content = "192.168.1.249"
   ttl     = 1
   proxied = false
 }
