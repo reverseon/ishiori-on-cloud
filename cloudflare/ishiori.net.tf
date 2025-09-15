@@ -50,5 +50,5 @@ resource "cloudflare_dns_record" "wild_hana_ishiori_net_CNAME" {
   type    = "CNAME"
   content = "tokyo1.gateway.ishiori.net"
   ttl     = 1
-  proxied = true
+  proxied = false
 }
