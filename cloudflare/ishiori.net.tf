@@ -43,3 +43,11 @@ resource "cloudflare_dns_record" "root_ishiori_net_A" {
   ttl     = 1
   proxied = true
 }
+
+resource "cloudflare_dns_record" "wild_hana_ishiori_net_CNAME" {
+  zone_id = cloudflare_zone.ishiori_net.id
+  name    = "*.hana.ishiori.net"
+  type    = "CNAME"
+  content = "tokyo1.gateway.ishiori.net"
+  ttl     = 1
+}
