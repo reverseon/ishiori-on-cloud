@@ -183,6 +183,71 @@ data "aws_iam_policy_document" "ci_terraform_provisions" {
     resources = ["*"]
   }
   
+  # VPC permissions for creating and managing VPC resources
+  statement {
+    effect = "Allow"
+    actions = [
+      "ec2:CreateVpc",
+      "ec2:DeleteVpc",
+      "ec2:DescribeVpcs",
+      "ec2:ModifyVpcAttribute",
+      "ec2:DescribeVpcAttribute",
+      "ec2:CreateSubnet",
+      "ec2:DeleteSubnet",
+      "ec2:DescribeSubnets",
+      "ec2:ModifySubnetAttribute",
+      "ec2:CreateInternetGateway",
+      "ec2:DeleteInternetGateway",
+      "ec2:DescribeInternetGateways",
+      "ec2:AttachInternetGateway",
+      "ec2:DetachInternetGateway",
+      "ec2:CreateRouteTable",
+      "ec2:DeleteRouteTable",
+      "ec2:DescribeRouteTables",
+      "ec2:CreateRoute",
+      "ec2:DeleteRoute",
+      "ec2:ReplaceRoute",
+      "ec2:AssociateRouteTable",
+      "ec2:DisassociateRouteTable",
+      "ec2:DescribeAvailabilityZones",
+      "ec2:CreateTags",
+      "ec2:DeleteTags",
+      "ec2:DescribeTags",
+      "ec2:DescribeNetworkAcls",
+      "ec2:CreateNetworkAcl",
+      "ec2:DeleteNetworkAcl",
+      "ec2:ReplaceNetworkAclAssociation",
+      "ec2:CreateNetworkAclEntry",
+      "ec2:DeleteNetworkAclEntry",
+      "ec2:ReplaceNetworkAclEntry",
+      "ec2:DescribeSecurityGroups",
+      "ec2:CreateSecurityGroup",
+      "ec2:DeleteSecurityGroup",
+      "ec2:AuthorizeSecurityGroupIngress",
+      "ec2:AuthorizeSecurityGroupEgress",
+      "ec2:RevokeSecurityGroupIngress",
+      "ec2:RevokeSecurityGroupEgress",
+      "ec2:ModifySecurityGroupRules",
+      "ec2:DescribeSecurityGroupRules",
+      "ec2:CreateNatGateway",
+      "ec2:DeleteNatGateway",
+      "ec2:DescribeNatGateways",
+      "ec2:AllocateAddress",
+      "ec2:ReleaseAddress",
+      "ec2:DescribeAddresses",
+      "ec2:AssociateAddress",
+      "ec2:DisassociateAddress",
+      "ec2:DescribeVpcEndpoints",
+      "ec2:CreateVpcEndpoint",
+      "ec2:DeleteVpcEndpoint",
+      "ec2:ModifyVpcEndpoint",
+      "ec2:DescribeVpcEndpointServices",
+      "ec2:DescribePrefixLists",
+      "ec2:DescribeRegions"
+    ]
+    resources = ["*"]
+  }
+  
   source_policy_documents = [data.aws_iam_policy_document.terraform_s3_backend.json]
 }
 
