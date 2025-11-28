@@ -1,5 +1,34 @@
 # Since this incur cost, please remember to destroy the resources after use.
 # To enable it, just rename to nat.tf. If done using, rename back to nat.tf.del
+
+# Data sources for existing VPC resources
+data "aws_vpc" "main" {
+  id = "vpc-0e6c74f7ab5d6efb6"
+}
+
+data "aws_subnet" "apne1a-general-public" {
+  id = "subnet-08c49b5a85510ac0e"
+}
+
+data "aws_subnet" "apne1a-general-private" {
+  id = "subnet-033c62979c7f897dc"
+}
+
+data "aws_subnet" "apne1c-general-private" {
+  id = "subnet-070da2d8a62821377"
+}
+
+data "aws_subnet" "apne1d-general-private" {
+  id = "subnet-015f1b8a10d84e685"
+}
+
+data "aws_internet_gateway" "main" {
+  filter {
+    name   = "attachment.vpc-id"
+    values = [data.aws_vpc.main.id]
+  }
+}
+
 # Fetch current public IP for SSH access
 data "http" "my_ip" {
   url = "https://ipinfo.io/json"
@@ -25,7 +54,7 @@ resource "aws_key_pair" "nat_key" {
 # NAT Security Group
 resource "aws_security_group" "nat" {
   name_prefix = "ishiori-nat-"
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = data.aws_vpc.main.id
   description = "Security group for NAT instance"
 
   # Allow all traffic from private subnets
@@ -35,9 +64,9 @@ resource "aws_security_group" "nat" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = [
-      aws_subnet.apne1a-general-private.cidr_block,
-      aws_subnet.apne1c-general-private.cidr_block,
-      aws_subnet.apne1d-general-private.cidr_block
+      data.aws_subnet.apne1a-general-private.cidr_block,
+      data.aws_subnet.apne1c-general-private.cidr_block,
+      data.aws_subnet.apne1d-general-private.cidr_block
     ]
   }
 
@@ -77,7 +106,7 @@ data "aws_ami" "fck_nat" {
 }
 
 resource "aws_network_interface" "ishiori-nat-if" {
-  subnet_id         = aws_subnet.apne1a-general-public.id
+  subnet_id         = data.aws_subnet.apne1a-general-public.id
   security_groups   = [aws_security_group.nat.id]
   source_dest_check = false # Required for NAT functionality
 
@@ -90,7 +119,7 @@ resource "aws_network_interface" "ishiori-nat-if" {
 resource "aws_eip" "nat_eip" {
   domain     = "vpc"
   instance   = aws_instance.ishiori_nat.id
-  depends_on = [aws_internet_gateway.main]
+  depends_on = [data.aws_internet_gateway.main]
 
   tags = {
     Name = "ishiori-nat-eip"
@@ -102,7 +131,7 @@ resource "aws_instance" "ishiori_nat" {
   ami                    = data.aws_ami.fck_nat.id
   instance_type          = "t4g.nano"
   key_name               = aws_key_pair.nat_key.key_name
-  subnet_id              = aws_subnet.apne1a-general-public.id
+  subnet_id              = data.aws_subnet.apne1a-general-public.id
   vpc_security_group_ids = [aws_security_group.nat.id]
   source_dest_check      = false # Required for NAT functionality
 
