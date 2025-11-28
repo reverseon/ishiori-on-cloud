@@ -1,0 +1,149 @@
+# Since this incur cost, please remember to destroy the resources after use.
+# To enable it, just rename to nat.tf. If done using, rename back to nat.tf.del
+# Fetch current public IP for SSH access
+data "http" "my_ip" {
+  url = "https://ipinfo.io/json"
+  request_headers = {
+    Accept = "application/json"
+  }
+}
+
+locals {
+  my_ip = jsondecode(data.http.my_ip.response_body).ip
+}
+
+# SSH Key Pair for NAT instance
+resource "aws_key_pair" "nat_key" {
+  key_name   = "ishiori-nat-key"
+  public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFwj0GoVwCK6ZuFLyARqgFj4jg0yxRbRC6thFWgb6a89"
+
+  tags = {
+    Name = "ishiori-nat-ssh-key"
+  }
+}
+
+# NAT Security Group
+resource "aws_security_group" "nat" {
+  name_prefix = "ishiori-nat-"
+  vpc_id      = aws_vpc.main.id
+  description = "Security group for NAT instance"
+
+  # Allow all traffic from private subnets
+  ingress {
+    description = "All traffic from private subnets"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = [
+      aws_subnet.apne1a-general-private.cidr_block,
+      aws_subnet.apne1c-general-private.cidr_block,
+      aws_subnet.apne1d-general-private.cidr_block
+    ]
+  }
+
+  # Allow SSH from current public IP
+  ingress {
+    description = "SSH from current public IP"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["${local.my_ip}/32"]
+  }
+
+  # Allow all outbound traffic to internet
+  egress {
+    description = "All outbound traffic"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "ishiori-nat-security-group"
+  }
+}
+
+# NAT
+data "aws_ami" "fck_nat" {
+
+  filter {
+    name   = "architecture"
+    values = ["arm64"]
+  }
+
+  owners      = ["568608671756"]
+  most_recent = true
+}
+
+resource "aws_network_interface" "ishiori-nat-if" {
+  subnet_id         = aws_subnet.apne1a-general-public.id
+  security_groups   = [aws_security_group.nat.id]
+  source_dest_check = false # Required for NAT functionality
+
+  tags = {
+    Name = "ishiori-nat-network-interface"
+  }
+}
+
+# Allocate Elastic IP for NAT instance
+resource "aws_eip" "nat_eip" {
+  domain     = "vpc"
+  instance   = aws_instance.ishiori_nat.id
+  depends_on = [aws_internet_gateway.main]
+
+  tags = {
+    Name = "ishiori-nat-eip"
+  }
+}
+
+# NAT Instance
+resource "aws_instance" "ishiori_nat" {
+  ami                    = data.aws_ami.fck_nat.id
+  instance_type          = "t4g.nano"
+  key_name               = aws_key_pair.nat_key.key_name
+  subnet_id              = aws_subnet.apne1a-general-public.id
+  vpc_security_group_ids = [aws_security_group.nat.id]
+  source_dest_check      = false # Required for NAT functionality
+
+  tags = {
+    Name = "ishiori-nat-instance"
+  }
+}
+
+# Test SSH connectivity to NAT instance
+resource "null_resource" "test_ssh" {
+  depends_on = [
+    aws_instance.ishiori_nat,
+    aws_eip.nat_eip
+  ]
+
+  triggers = {
+    instance_id = aws_instance.ishiori_nat.id
+    public_ip   = aws_eip.nat_eip.public_ip
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "echo 'SSH connection successful!'",
+      "hostname",
+      "whoami",
+      "uptime",
+      "ip addr show",
+      "echo 'NAT instance is ready!'"
+    ]
+
+    connection {
+      type        = "ssh"
+      host        = aws_eip.nat_eip.public_ip
+      user        = "ec2-user"
+      private_key = file("~/.ssh/id_ed25519")
+      timeout     = "2m"
+    }
+  }
+}
+
+output "nat_public_ip" {
+  value = aws_eip.nat_eip.public_ip
+  description = "Public IP of the NAT instance"
+}
