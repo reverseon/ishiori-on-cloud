@@ -270,6 +270,22 @@ data "aws_iam_policy_document" "ci_terraform_provisions" {
     resources = ["*"]
   }
 
+  # ACM permissions for creating and managing SSL/TLS certificates
+  statement {
+    effect = "Allow"
+    actions = [
+      "acm:RequestCertificate",
+      "acm:DescribeCertificate",
+      "acm:DeleteCertificate",
+      "acm:ListCertificates",
+      "acm:GetCertificate",
+      "acm:ListTagsForCertificate",
+      "acm:AddTagsToCertificate",
+      "acm:RemoveTagsFromCertificate"
+    ]
+    resources = ["*"]
+  }
+
   # VPC permissions for creating and managing VPC resources
   statement {
     effect = "Allow"
