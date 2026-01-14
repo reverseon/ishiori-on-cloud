@@ -77,6 +77,7 @@ resource "aws_cloudfront_distribution" "personal_website" {
   is_ipv6_enabled     = true
   default_root_object = "index.html"
   price_class         = "PriceClass_200"
+  aliases             = ["reon.my.id", "www.reon.my.id"]
 
   origin {
     domain_name              = aws_s3_bucket.personal_website.bucket_regional_domain_name
@@ -175,9 +176,10 @@ resource "aws_cloudfront_distribution" "personal_website" {
     }
   }
 
-  # Use CloudFront default certificate (Cloudflare will handle your custom domain SSL)
   viewer_certificate {
-    cloudfront_default_certificate = true
+    acm_certificate_arn      = aws_acm_certificate_validation.personal_website.certificate_arn
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2021"
   }
 
   tags = {
