@@ -183,6 +183,83 @@ data "aws_iam_policy_document" "ci_terraform_provisions" {
     resources = ["*"]
   }
   
+  # S3 permissions for creating and managing S3 buckets
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:CreateBucket",
+      "s3:DeleteBucket",
+      "s3:ListBucket",
+      "s3:GetBucketLocation",
+      "s3:GetBucketPolicy",
+      "s3:PutBucketPolicy",
+      "s3:DeleteBucketPolicy",
+      "s3:GetBucketAcl",
+      "s3:PutBucketAcl",
+      "s3:GetBucketCORS",
+      "s3:PutBucketCORS",
+      "s3:DeleteBucketCORS",
+      "s3:GetBucketWebsite",
+      "s3:PutBucketWebsite",
+      "s3:DeleteBucketWebsite",
+      "s3:GetBucketVersioning",
+      "s3:PutBucketVersioning",
+      "s3:GetBucketPublicAccessBlock",
+      "s3:PutBucketPublicAccessBlock",
+      "s3:DeleteBucketPublicAccessBlock",
+      "s3:GetBucketTagging",
+      "s3:PutBucketTagging",
+      "s3:DeleteBucketTagging",
+      "s3:GetEncryptionConfiguration",
+      "s3:PutEncryptionConfiguration",
+      "s3:GetBucketLogging",
+      "s3:PutBucketLogging",
+      "s3:GetLifecycleConfiguration",
+      "s3:PutLifecycleConfiguration",
+      "s3:GetBucketOwnershipControls",
+      "s3:PutBucketOwnershipControls",
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:DeleteObject"
+    ]
+    resources = ["*"]
+  }
+
+  # CloudFront permissions for creating and managing distributions
+  statement {
+    effect = "Allow"
+    actions = [
+      "cloudfront:CreateDistribution",
+      "cloudfront:DeleteDistribution",
+      "cloudfront:GetDistribution",
+      "cloudfront:GetDistributionConfig",
+      "cloudfront:UpdateDistribution",
+      "cloudfront:ListDistributions",
+      "cloudfront:TagResource",
+      "cloudfront:UntagResource",
+      "cloudfront:ListTagsForResource",
+      "cloudfront:CreateOriginAccessControl",
+      "cloudfront:DeleteOriginAccessControl",
+      "cloudfront:GetOriginAccessControl",
+      "cloudfront:UpdateOriginAccessControl",
+      "cloudfront:ListOriginAccessControls",
+      "cloudfront:CreateCachePolicy",
+      "cloudfront:DeleteCachePolicy",
+      "cloudfront:GetCachePolicy",
+      "cloudfront:UpdateCachePolicy",
+      "cloudfront:ListCachePolicies",
+      "cloudfront:CreateOriginRequestPolicy",
+      "cloudfront:DeleteOriginRequestPolicy",
+      "cloudfront:GetOriginRequestPolicy",
+      "cloudfront:UpdateOriginRequestPolicy",
+      "cloudfront:ListOriginRequestPolicies",
+      "cloudfront:CreateInvalidation",
+      "cloudfront:GetInvalidation",
+      "cloudfront:ListInvalidations"
+    ]
+    resources = ["*"]
+  }
+
   # VPC permissions for creating and managing VPC resources
   statement {
     effect = "Allow"

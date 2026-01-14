@@ -1,7 +1,7 @@
 resource "aws_s3_bucket" "personal_website" {
-  bucket = "personal-website-bucket"
+  bucket = "reverseon-personal-website-bucket"
   tags = {
-    Name = "personal-website-bucket"
+    Name = "reverseon-personal-website-bucket"
   }
 }
 
