@@ -1,3 +1,25 @@
+# ACM Certificate for personal website (must be us-east-1 for CloudFront)
+resource "aws_acm_certificate" "personal_website" {
+  provider                  = aws.us_east_1
+  domain_name               = "reon.my.id"
+  subject_alternative_names = ["www.reon.my.id"]
+  validation_method         = "DNS"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  tags = {
+    Name = "personal-website-cert"
+  }
+}
+
+# Wait for certificate validation
+resource "aws_acm_certificate_validation" "personal_website" {
+  provider        = aws.us_east_1
+  certificate_arn = aws_acm_certificate.personal_website.arn
+}
+
 resource "aws_s3_bucket" "personal_website" {
   bucket = "reverseon-personal-website-bucket"
   tags = {
