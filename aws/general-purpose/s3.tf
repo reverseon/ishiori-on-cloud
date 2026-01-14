@@ -55,6 +55,7 @@ resource "aws_cloudfront_distribution" "personal_website" {
   is_ipv6_enabled     = true
   default_root_object = "index.html"
   aliases             = ["reon.my.id"]
+  price_class         = "PriceClass_200"
 
   origin {
     domain_name              = aws_s3_bucket.personal_website.bucket_regional_domain_name
